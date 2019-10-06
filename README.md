@@ -1,5 +1,15 @@
 # google-maps-parser
 
+## Getting started
+
+Install all dependencies with:
+
+```
+pip install -r requirements.txt
+```
+
+> Note: This script requires Python 3.6+
+
 ## Usage:
 
 An example query for searching famous museums in London can be:

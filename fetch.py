@@ -35,11 +35,14 @@ def fetch_place_detail(place_id):
 parser = argparse.ArgumentParser()
 parser.add_argument('--query', type=str, help='Search query for Google Maps API')
 parser.add_argument('--directory', type=str, help='Output directory')
-parser.add_argument('--rating', type=float)
-parser.add_argument('--reviews', type=int)
-parser.add_argument('--operator', default='and', choices=OPERATORS.keys(), type=str)
-parser.add_argument('--exclude', '-e', required=False, choices=PLACES_TYPES, nargs='+', type=str)
-parser.add_argument('--language', default='en', required=False, choices=['en', 'fr', 'de'], type=str)
+parser.add_argument('--rating', type=float, help='Minimum rating of the place(s)')
+parser.add_argument('--reviews', type=int, help='Minimum review count of the place(s)')
+parser.add_argument('--operator', default='and', choices=OPERATORS.keys(), type=str,
+								  help='Operation to perform between ratings and reviews count.')
+parser.add_argument('--exclude', '-e', choices=PLACES_TYPES, nargs='+', type=str,
+									   help='Exclude the places from the query result')
+parser.add_argument('--language', default='en', choices=['en', 'fr', 'de'], type=str,
+								  help='Language of the Wikipedia link')
 
 args = parser.parse_args()
 
@@ -78,19 +81,18 @@ with open(args.directory + f'/{filename}.csv', 'w') as out_file:
 		except:
 			url, summary = '', ''
 
-		if 'rating' in place:
+		if args.exclude and 'rating' in place and (args.rating and args.reviews):
 			rating = place['rating']
 			if OPERATORS[args.operator](rating >= args.rating, reviews >= args.reviews):
 				# If item type is from the exlude list, skip it.
-				if args.exclude:
-					if list(set(args.exclude) & set(types)):
-						continue
+				if list(set(args.exclude) & set(types)):
+					continue
 
-				lat, lng = place['geometry']['location']['lat'], place['geometry']['location']['lng']
-				data = [name, (lat, lng), ', '.join(types), rating, formatted_address, summary, url, reviews]
-				print(f'{filename} -> {data}')
-				writer.writerow(data)
-	# print(json.dumps(place, indent=4, sort_keys=True))
+		lat, lng = place['geometry']['location']['lat'], place['geometry']['location']['lng']
+		data = [name, (lat, lng), ', '.join(types), place['rating'], formatted_address, summary, url, reviews]
+		print(f'{filename} -> {data}')
+		writer.writerow(data)
+		# print(json.dumps(place, indent=4, sort_keys=True))
 
 		# else:
 		# 	rating = -1

@@ -5,7 +5,7 @@
 Install all dependencies with:
 
 ```
-pip install -r requirements.txt
+$ pip install -r requirements.txt
 ```
 
 > Note: This script requires Python 3.6+
@@ -15,13 +15,13 @@ pip install -r requirements.txt
 An example query for searching famous museums in London can be:
 
 ```bash
-python fetch.py --directory output/england/london --rating 4.5 --reviews 1000 --operator and --query "musuems in london"
+$ python fetch.py --directory output/england/london --rating 4.5 --reviews 1000 --operator and --query "musuems in london"
 ```
 
 This will return all the museums in London that have a rating > 4.5 *and* a review count > 1000. See more details with:
 
 ```
-python fetch.py --help
+$ python fetch.py --help
 
 usage: fetch.py [-h] [--query QUERY] [--directory DIRECTORY] [--rating RATING]
                 [--reviews REVIEWS] [--operator {and,or}]
@@ -45,4 +45,5 @@ optional arguments:
 
 ## Imorting to Google My Maps
 
-The resulting CSV files can be imported to Google My Maps.
+The following blog post describes how the CSV files can be imported to Google My Maps.
+- [Programmatically organising your backpacking trip using Google My Maps](https://adl1995.github.io/programmatically-organising-your-backpacking-trip-using-google-my-maps.html)

@@ -9,9 +9,6 @@ import configparser
 
 import wikipedia
 
-# TODO
-# option to specify number of sentences
-
 # Read the API key form the configuration.
 config = configparser.ConfigParser()
 config.read('secrets.ini')
@@ -43,9 +40,10 @@ parser.add_argument('--exclude', '-e', choices=PLACES_TYPES, nargs='+', type=str
 									   help='Exclude the places from the query result')
 parser.add_argument('--language', default='en', choices=['en', 'fr', 'de'], type=str,
 								  help='Language of the Wikipedia link')
+parser.add_argument('--summary-length', type=int,
+										help='Limit the number of sentences in place summary.')
 
 args = parser.parse_args()
-
 # Fetch the data.
 places = requests.get(f'https://maps.googleapis.com/maps/api/place/textsearch/json?query={args.query}&language=en&key={API_KEY}')
 # Convert the response to a JSON object.
@@ -63,41 +61,52 @@ wikipedia.set_lang(args.language)
 
 columns = ['name', 'coordinates', 'types', 'rating', 'formatted address', 'summary', 'url', 'reviews']
 with open(args.directory + f'/{filename}.csv', 'w') as out_file:
-	writer = csv.writer(out_file, delimiter=',')
+	writer = csv.writer(out_file, delimiter='|')
 	writer.writerow(columns)
 	for place in places:
 		name = place['name']
 		formatted_address = place['formatted_address']
 		types = place['types']
-		try:
+		if 'user_ratings_total' in place:
 			reviews = place['user_ratings_total']
-		except:
-			continue
+		else:
+			reviews = -1
+
+		if 'rating' in place:
+			rating = place['rating']
+		else:
+			rating = -1
 
 		try:
-			wiki_page = wikipedia.page(name)
+			if args.summary_length:
+				wiki_page = wikipedia.page(name, sentences=args.summary_length)
+			else:
+				wiki_page = wikipedia.page(name)
 			url = wiki_page.url
 			summary = wiki_page.summary.replace('\n', '')
+		except KeyboardInterrupt:
+			exit(-1)
 		except:
 			url, summary = '', ''
 
-		if args.exclude and 'rating' in place and (args.rating and args.reviews):
+		# If item type is from the exlude list, skip it.
+		if args.exclude:
+			if list(set(args.exclude) & set(types)):
+				continue
+
+		# If an item doesn't satify the rating and review count criteria, skip it.
+		if args.rating and args.reviews:
 			rating = place['rating']
-			if OPERATORS[args.operator](rating >= args.rating, reviews >= args.reviews):
-				# If item type is from the exlude list, skip it.
-				if list(set(args.exclude) & set(types)):
-					continue
+			if not OPERATORS[args.operator](rating >= args.rating, reviews >= args.reviews):
+				continue
+		elif args.rating:
+			if not rating >= args.rating:
+				continue
+		elif args.reviews:
+			if not reviews >= args.reviews:
+				continue
 
 		lat, lng = place['geometry']['location']['lat'], place['geometry']['location']['lng']
-		data = [name, (lat, lng), ', '.join(types), place['rating'], formatted_address, summary, url, reviews]
+		data = [name, (lat, lng), ', '.join(types), rating, formatted_address, summary, url, reviews]
 		print(f'{filename} -> {data}')
 		writer.writerow(data)
-		# print(json.dumps(place, indent=4, sort_keys=True))
-
-		# else:
-		# 	rating = -1
-		# types = ', '.join(place['types'])
-		# lat, lng = place['geometry']['location']['lat'], place['geometry']['location']['lng']
-		# data = [name, (lat, lng), types, rating, formatted_address, icon]
-		# print(f'{filename} -> {data}')
-		# writer.writerow(data)

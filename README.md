@@ -1,4 +1,4 @@
-# google-maps-parser
+# Trip Planner
 
 This tool filters Google Maps places based on an input query and exports them to a CSV file. 
 

@@ -36,7 +36,7 @@ This file can then be imported to Google My Maps, which is described in the [sec
 
 ### Refining a search query
 
-Items can be exluded from a search query using the `--exclude` parameter. Considering our previous example, if we want to exlude all parks from our search query, the command can be modified as:
+Items can be exluded from a search query using the `--exclude` parameter. Considering our previous example, if we want to exclude all parks from our search query, the command can be modified as:
 
 ```
 $ python fetch.py --directory output/england/london --rating 4.5 --reviews 5000 --operator and --query "attractions in London" --exclude park
@@ -69,7 +69,7 @@ optional arguments:
                         Limit the number of sentences in place summary.
 ```
 
-## Imorting to Google My Maps
+## Importing to Google My Maps
 
 The following blog post describes how the CSV files can be imported to Google My Maps.
 - [Programmatically organising your backpacking trip using Google My Maps](https://adl1995.github.io/programmatically-organising-your-backpacking-trip-using-google-my-maps.html)

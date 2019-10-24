@@ -38,7 +38,7 @@ This file can then be imported to [Google My Maps](https://drive.google.com/open
 
 ### Refining a search query
 
-Items can be exluded from a search query using the `--exclude` parameter. Considering our previous example, if we want to exclude all parks from our search query, the command can be modified as:
+Items can be excluded from a search query using the `--exclude` parameter. Considering our previous example, if we want to exclude all parks from our search query, the command can be modified as:
 
 ```
 $ python fetch.py --directory output/england/london --rating 4.5 --reviews 5000 --operator and --query "attractions in London" --exclude park

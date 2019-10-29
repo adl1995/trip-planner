@@ -60,7 +60,7 @@ filename = ' '.join([q.capitalize() for q in query])
 wikipedia.set_lang(args.language)
 
 columns = ['name', 'coordinates', 'types', 'rating', 'formatted address', 'summary', 'url', 'reviews']
-with open(args.directory + f'/{filename}.csv', 'w') as out_file:
+with open(args.directory + f'/{filename}.csv', 'w', encoding='utf-8') as out_file:
 	writer = csv.writer(out_file, delimiter='|')
 	writer.writerow(columns)
 	for place in places:
